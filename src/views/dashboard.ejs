@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Customer Dashboard</title>
+  <link rel="stylesheet" href="/style1.css" />
+</head>
+<body class="dashboard-body">
+  <header class="dashboard-header">
+    <div class="dashboard-nav-wrap">
+      <h1>Customer Dashboard</h1>
+      <nav class="dashboard-nav">
+        <a href="/index">Home</a>
+        <a href="/register">Book Now</a>
+        <a href="/logout">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+    <div class="dashboard-card">
+      <div class="dashboard-title-row">
+        <h2><%= userName %> - Booking Details</h2>
+      </div>
+
+      <% if (!bookings || bookings.length === 0) { %>
+        <p class="dashboard-empty">No bookings found yet. Create one from Book Now.</p>
+      <% } else { %>
+        <div class="dashboard-table-wrap">
+          <table class="dashboard-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Mobile</th>
+                <th>Address</th>
+                <th>Date From</th>
+                <th>Date To</th>
+                <th>Services</th>
+                <th>Guests</th>
+                <th>Booked At</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% bookings.forEach((booking) => { %>
+                <tr>
+                  <td data-label="Name"><%= booking.Name %></td>
+                  <td data-label="Mobile"><%= booking.Mobile_no %></td>
+                  <td data-label="Address"><%= booking.Wedding_Address %></td>
+                  <td data-label="Date From"><%= new Date(booking.Wedding_date_From).toLocaleDateString('en-GB') %></td>
+                  <td data-label="Date To"><%= new Date(booking.Wedding_date_To).toLocaleDateString('en-GB') %></td>
+                  <td data-label="Services"><%= (booking.Service || []).join(', ') %></td>
+                  <td data-label="Guests"><%= booking.No_of_Guests %></td>
+                  <td data-label="Booked At"><%= new Date(booking.createdAt).toLocaleString('en-GB') %></td>
+                  <td data-label="Action">
+                    <form class="dashboard-cancel-form" action="/dashboard/cancel/<%= booking._id %>" method="POST" onsubmit="return confirm('Cancel this booking?');">
+                      <button type="submit" class="dashboard-cancel-btn">Cancel</button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+  </main>
+</body>
+</html>

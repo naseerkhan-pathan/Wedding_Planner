@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignUp Page</title>
+    <link rel="stylesheet" href="/style1.css">
+    <script>
+        function myfunction(){
+    var x =document.getElementById("Password");
+    var y =document.getElementById("Confirm_Password");
+
+    if(x.type === "password"){
+        x.type = "text";
+    }
+    else{
+        x.type = "password";
+    }
+    if(y.type === "password"){
+        y.type = "text";
+    }
+    else{
+        y.type = "password";
+    }
+
+}     
+const signupButton = document.getElementById('signup');
+signupButton.addEventListener('click', function() {
+window.location.href = 'index.ejs';
+});
+
+
+function lpage(){
+    window.location.replace("newpage.html")
+}/**
+ * 
+ */
+</script>
+<style>
+    .form{
+        height: 620px;
+    }
+    .error{
+        margin-top: 2px;
+    }
+</style>
+</head>
+
+<body style="background:url('/images/bg/login.webp');background-position: center; background-size: cover; background-repeat: no-repeat;
+    height: 100vh;">
+    <div class="form">
+    <form action="/signup" method="post">
+        <% if (errorMessage) { %>
+            <div class="error"><%= errorMessage %></div>
+        <% } %><br>
+
+        <h1>SIGN-IN FORM</h1>
+        <p>UserName :</p>
+        <input type="text" name="UserName" placeholder="Name Here" id="UserName">
+        <p>Mobile_No :</p>
+        <span>+91</span>
+        <input type="tel"name="Mobile_No" placeholder="Enter Phone Number" id="Mobile_No" pattern="[0-9]{10}" required>
+        <p>Gmail :</p>
+        <input type="email" id="gmail" name="Gmail" placeholder="Enter Email" required />
+        <p>Password :</p>
+        <input type="password" name="Password" placeholder="Password Here" id="Password">
+        <p>Confirm_Password :</p>
+        <input type="password" name="Confirm_Password" placeholder="confirm Password Here" id="Confirm_Password">
+        
+        <input type="radio" onclick="myfunction()">
+        <input type="submit" name="signup" value="signup" onclick="validate()"><br>
+        <b style="color: white;">Do You Have An Account ? </b><a href="/login">Login</a>
+        </form>
+    </div>
+
+    <div>
+        <p id="length"></p>
+    </div>
+    
+   
+</body>
+</html>

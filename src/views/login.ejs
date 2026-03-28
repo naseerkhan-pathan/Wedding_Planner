@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="/style1.css">
+   <style>
+    .form{
+        height: 470px;
+    }
+    .error{
+        margin-top: 2px;
+    }
+</style>    
+<script type="text/javascript">
+function myfunction(){
+    var x =document.getElementById("Password");
+    var y =document.getElementById("Confirm_Password");
+
+    if(x.type === "password"){
+        x.type = "text";
+    }
+    else{
+        x.type = "password";
+    }
+    if(y.type === "password"){
+        y.type = "text";
+    }
+    else{
+        y.type = "password";
+    }
+
+}
+function valid(){
+	var name =f1.UserName.value;
+	var pwd = f1.Password.value;
+	if (name==" "|| pwd ==" "){
+		location.href="login.ejs";
+		alert("Enter all fields");
+	}else{
+		f1.submit();
+	}
+}
+</script>
+</head>
+
+<body style="background:url('/images/bg/login.webp');background-position: center; background-size: cover; background-repeat: no-repeat;"> 
+<form action="/login" method="post" name="f1">
+
+
+    <div class="form">
+        <% if (errorMessage) { %>
+            <div class="error"><%= errorMessage %></div>
+        <% } %>
+        <br>
+        <h1>LOGIN FORM</h1>
+        <p>UserName :</p>
+        <input type="text" name="UserName" placeholder="Name Here" id="UserName">
+        <p>Password :</p>
+        <input type="password" name="Password" placeholder="Password Here" id="Password">
+        <a href="/forget">Forgot Password..?</a><br>
+        <input type="radio" onclick="myfunction()">
+        <input type="submit" name="" value="LOGIN" onclick="valid()"><br>
+        Do You Not Have An Account ? <a href="/signup">SignUp</a>
+        <br><br>
+        <a href="/index0"><input type="button" name="" value="Home"></a><br>
+    </div>
+
+    <div>
+        <p id="length"></p>
+    </div>    
+   </form>
+</body>
+</html>
+
+
+
+
+

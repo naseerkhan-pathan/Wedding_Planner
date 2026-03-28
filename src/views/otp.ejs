@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enter OTP</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('/images/bg/flower.jpg') center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .otp-container {
+      background: rgb(0, 0, 0);
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      width: 400px;
+      text-align: center;
+    }
+
+    .otp-container h2 {
+      margin-bottom: 20px;
+      color: #ffffff;
+    }
+
+    .otp-container input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .otp-container button {
+      width: 100%;
+      padding: 12px;
+      background-color: #4CAF50;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .otp-container button:hover {
+      background-color: #45a049;
+    }
+
+    .info {
+      margin-top: 15px;
+      font-size: 20px;
+      color: #777;
+    }
+
+    .info a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    .info a:hover {
+      text-decoration: underline;
+    }
+
+    .error {
+      color: red;
+      margin-bottom: 10px;
+      min-height: 20px;
+      transition: opacity 0.5s ease;
+    }
+
+    .hide {
+      opacity: 0;
+      visibility: hidden;
+    }
+  </style>
+</head>
+<body>
+  <div class="otp-container">
+    <div class="error" id="error">
+        <%= typeof errorMessage !== 'undefined' ? errorMessage : '' %>
+    </div>
+    <h2>Enter OTP</h2>
+    <form action="/verify-otp" method="POST">
+      <input type="text" name="otp" placeholder="Enter OTP" maxlength="6" required>
+      <button type="submit">Verify OTP</button>
+    </form>
+    <p class="info">Didn't receive an OTP? <a href="#" onclick="resendOTP(event)">Resend</a></p>
+  </div>
+
+  <script>
+    function resendOTP(event) {
+      event.preventDefault();
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '/resend-otp';
+      document.body.appendChild(form);
+      form.submit();
+    }
+
+    setTimeout(() => {
+      const errorMsg = document.getElementById('error');
+      if (errorMsg) {
+        errorMsg.classList.add('hide');
+      }
+    }, 5000);
+  </script>
+</body>
+</html>

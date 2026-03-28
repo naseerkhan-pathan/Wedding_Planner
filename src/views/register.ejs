@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wedding Booking</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+
+body {
+  margin: 0;
+  padding: 10px;
+  font-family: 'Poppins', sans-serif;
+  background: url('/images/bg/register.jpeg') no-repeat center center/cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 0;
+}
+
+form {
+  width: 100%;
+  max-width: 700px;
+  position: relative;
+  z-index: 1;
+}
+
+.form {
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(10px);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+}
+
+.form h1 {
+  text-align: center;
+  margin-bottom: 35px;
+  font-size: 2rem;
+  color: #2c2c2c;
+}
+
+.form-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  align-items: start;
+}
+
+.form label {
+  display: block;
+  margin-top: 18px;
+  font-weight: 600;
+  font-size: 0.65rem;
+  color: #444;
+}
+.form input,
+.form select {
+  padding: 10px;
+  margin-top: 6px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  font-size: 0.95rem;
+  background: #fafafa;
+  transition: 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form input:focus,
+.form select:focus {
+  border-color: #d63384;
+  box-shadow: 0 0 8px rgba(214,51,132,0.3);
+  outline: none;
+  background: #fff;
+}
+.form-right {
+  display: flex;
+  flex-direction: column;
+}
+.services-section {
+  margin-top: 25px;
+}
+
+.services-section h2 {
+  margin-bottom: 10px;
+  color: #d63384;
+  font-size: 1.1rem;
+}
+
+.service-option1 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.service-option {
+  display: flex;
+  align-items: center;
+  background: #f4f4f4;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.service-option:hover {
+  background: #ffe3f1;
+}
+
+.service-option input {
+  margin-right: 4px;
+  accent-color: #d63384;
+}
+.form-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.back-btn,
+.submit-btn {
+  width: 100px;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.back-btn {
+  border: 2px solid #d63384;
+  background: transparent;
+  color: #d63384;
+}
+
+.back-btn:hover {
+  background: #d63384;
+  color: white;
+}
+
+.submit-btn {
+  border: none;
+  background: linear-gradient(135deg, #d63384, #ff4da6);
+  color: white;
+}
+
+.submit-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(214,51,132,0.4);
+}
+
+@media (max-width: 992px) {
+  .form-content {
+    grid-template-columns: 1fr;
+    gap: 35px;
+  }
+}
+
+@media (max-width: 576px) {
+
+  .form {
+    padding: 25px;
+  }
+
+  .service-option1 {
+    grid-template-columns: 1fr;
+  }
+
+  .back-btn,
+  .submit-btn {
+    width: 100%;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<form action="/register" method="POST">
+  <div class="form">
+    <h1>Wedding Booking</h1>
+
+    <div class="form-content">
+      <div class="form-left">
+
+        <label>Name</label>
+        <input type="text" name="Name" required>
+
+        <label>Mobile Number</label>
+        <input type="tel" name="Mobile_no"
+               placeholder="Enter Phone Number"
+               pattern="[0-9]{10}" required>
+
+        <label>Wedding Address</label>
+        <input type="text" name="Wedding_Address" required>
+
+        <label>Wedding Date From</label>
+        <input type="date" id="Wedding_date_From" name="Wedding_date_From" required>
+
+        <label>Wedding Date To</label>
+        <input type="date" id="Wedding_date_To" name="Wedding_date_To" required>
+
+      </div>
+
+      <div class="form-right">
+
+        <div class="services-section">
+          <h2>Services</h2>
+
+          <div class="service-option1">
+
+            <label class="service-option">
+              <input type="checkbox" name="Service" value="Photography">
+              Photography & Video
+            </label>
+
+            <label class="service-option">
+              <input type="checkbox" name="Service" value="Catering">
+              Cooking & Catering
+            </label>
+
+            <label class="service-option">
+              <input type="checkbox" name="Service" value="Decoration">
+              Decoration & Wedding Flowers
+            </label>
+
+            <label class="service-option">
+              <input type="checkbox" name="Service" value="Music">
+              Music & DJ
+            </label>
+
+            <label class="service-option">
+              <input type="checkbox" name="Service" value="Makeup">
+              Beauty & Makeup
+            </label>
+
+            <label class="service-option">
+              <input type="checkbox" name="Service" value="Invitations">
+              Invitations
+            </label>
+
+            <label class="service-option">
+              <input type="checkbox" name="Service" value="Cake">
+              Wedding Cake
+            </label>
+
+            <label class="service-option">
+              <input type="checkbox" name="Service" value="Jewellery">
+              Jewellery
+            </label>
+
+          </div>
+        </div>
+
+        <label>No. of Guests</label>
+        <input type="number" name="No_of_Guests" required>
+
+      </div>
+
+    </div>
+
+    <div class="form-buttons">
+      <button type="button" class="back-btn" onclick="window.location.href='/index'">Back</button>
+      <button type="submit" class="submit-btn">Book Now</button>
+    </div>
+    <p style="text-align:center;margin-top:12px;color:#333;font-size:0.9rem;">
+      Advance payment: INR <%= advanceAmount %> (Card / UPI)
+    </p>
+
+  </div>
+</form>
+
+<script>
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('Wedding_date_From').min = today;
+document.getElementById('Wedding_date_To').min = today;
+</script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+const form = document.querySelector("form");
+const razorpayKeyId = "<%= razorpayKeyId %>";
+const advanceAmount = <%= advanceAmount %>;
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  if (!razorpayKeyId) {
+    alert("Payment gateway is not configured. Please contact admin.");
+    return;
+  }
+
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData.entries());
+  data.Service = formData.getAll("Service");
+
+  if (!data.Service.length) {
+    alert("Please select at least one service.");
+    return;
+  }
+
+  const orderResponse = await fetch("/create-payment-order", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ amount: advanceAmount })
+  });
+
+  const orderResult = await orderResponse.json();
+  if (!orderResult.success) {
+    alert(orderResult.message || "Unable to initialize payment.");
+    return;
+  }
+
+  const options = {
+    key: orderResult.keyId,
+    amount: orderResult.order.amount,
+    currency: orderResult.order.currency,
+    name: "ABG Weddings",
+    description: `Wedding advance booking payment (INR ${advanceAmount})`,
+    order_id: orderResult.order.id,
+    prefill: {
+      name: data.Name,
+      contact: data.Mobile_no,
+    },
+    method: {
+      upi: true,
+      card: true,
+      netbanking: false,
+      wallet: false,
+      emi: false,
+      paylater: false,
+    },
+    theme: {
+      color: "#d63384",
+    },
+    handler: async function (paymentResult) {
+      data.payment = {
+        orderId: paymentResult.razorpay_order_id,
+        paymentId: paymentResult.razorpay_payment_id,
+        signature: paymentResult.razorpay_signature,
+      };
+
+      const bookingResponse = await fetch("/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const bookingResult = await bookingResponse.json();
+      if (bookingResult.success) {
+        alert("Payment successful. Booking confirmed.");
+        window.location.href = "/dashboard";
+      } else {
+        alert(bookingResult.message || "Payment succeeded, but booking failed. Contact support.");
+      }
+    },
+  };
+
+  const razorpayInstance = new Razorpay(options);
+  razorpayInstance.on("payment.failed", function () {
+    alert("Payment failed. Booking was not created.");
+  });
+  razorpayInstance.open();
+});
+</script>
+
+</body>
+</html>
