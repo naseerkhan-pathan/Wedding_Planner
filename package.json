@@ -2,9 +2,9 @@
   "name": "wedding_planner",
   "version": "1.0.0",
   "description": "Wedding Planner Web Application",
-  "main": "server.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node app.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
