@@ -13,7 +13,13 @@ const bookingSchema = new mongoose.Schema({
   Payment_Order_Id: { type: String, required: true },
   Payment_Id: { type: String, required: true },
   Payment_Status: { type: String, required: true, default: 'paid' },
+  // Admin manages booking status: pending -> accepted -> process started -> completed
+  status: { type: String, enum: ['pending', 'accepted', 'rejected', 'process started', 'completed', 'cancelled'], default: 'pending' },
+  Remaining_Amount: { type: Number, default: 0 },
+  Final_Amount: { type: Number, default: 0 },
+  amountUpdatedAt: { type: Date },
+  completedAt: { type: Date },
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Booking', bookingSchema);
+module.exports = mongoose.model('Register', bookingSchema);

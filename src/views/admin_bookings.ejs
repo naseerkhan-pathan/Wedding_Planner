@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Manage Bookings</title>
+  <link rel="stylesheet" href="/admin.css">
+</head>
+<body class="admin-body">
+  <main class="admin-shell">
+    <header class="admin-header">
+      <div>
+        <h1>Manage Bookings</h1>
+        <p>Update event progress, track the INR 5,000 online advance, and add remaining event money after completion.</p>
+      </div>
+      <a href="/logout" class="admin-logout">Logout</a>
+    </header>
+
+    <nav class="admin-nav">
+      <a href="/admin">Dashboard</a>
+      <a href="/admin/services">Services</a>
+      <a href="/admin/reviews">Reviews</a>
+      <a href="/admin/bookings" class="active">Bookings</a>
+      <a href="/admin/stats">Stats</a>
+    </nav>
+
+    <section class="admin-card">
+      <% if (bookings && bookings.length > 0) { %>
+        <div class="booking-toolbar">
+          <label for="bookingSearch">Search customer</label>
+          <input type="search" id="bookingSearch" placeholder="Search by customer name">
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Customer</th>
+                <th>Contact</th>
+                <th>Details</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Advance</th>
+                <th>Event Amount</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="bookingsTableBody">
+                <% bookings.forEach((booking, index) => { %>
+                  <% const currentStatus = booking.status || 'pending'; %>
+                  <% const customerName = booking.Name || booking.userName || ''; %>
+                  <% const customerUserName = booking.UserName || booking.userName || ''; %>
+                  <% const canChangeStatus = currentStatus !== 'completed'; %>
+                  <% const canCancelBooking = currentStatus === 'rejected' || currentStatus === 'cancelled'; %>
+                  <% const amountSaved = Boolean(booking.amountUpdatedAt); %>
+                  <% const advanceAmount = 5000; %>
+                  <% const legacyTotal = booking.bookingType === 'wedding' ? (booking.Final_Amount || 0) : (booking.finalAmount || 0); %>
+                  <% const savedRemaining = booking.bookingType === 'wedding' ? booking.Remaining_Amount : booking.remainingAmount; %>
+                  <% const remainingAmount = savedRemaining !== undefined && savedRemaining !== null ? (savedRemaining || 0) : Math.max(legacyTotal - advanceAmount, 0); %>
+                  <% const totalAmount = advanceAmount + remainingAmount; %>
+                <tr data-original-index="<%= index %>" data-customer="<%= `${customerName} ${customerUserName}`.toLowerCase() %>">
+                  <td><%= booking.bookingType === 'wedding' ? 'Wedding' : 'Service' %></td>
+                  <td>
+                    <strong><%= customerName %></strong><br>
+                    <small><%= customerUserName %></small>
+                  </td>
+                  <td>
+                    <% if (booking.bookingType === 'wedding') { %>
+                      <%= booking.Mobile_no %><br>
+                      <small><%= booking.Wedding_Address %></small>
+                    <% } else { %>
+                      -
+                    <% } %>
+                  </td>
+                  <td>
+                    <% if (booking.bookingType === 'wedding') { %>
+                      <strong><%= (booking.Service || []).join(', ') %></strong><br>
+                      <small>Guests: <%= booking.No_of_Guests %></small>
+                    <% } else { %>
+                      <strong><%= booking.serviceName %></strong><br>
+                      <small><%= booking.notes || '-' %></small>
+                    <% } %>
+                  </td>
+                  <td>
+                    <% if (booking.bookingType === 'wedding') { %>
+                      <%= new Date(booking.Wedding_date_From).toLocaleDateString() %> - <%= new Date(booking.Wedding_date_To).toLocaleDateString() %>
+                    <% } else { %>
+                      <%= booking.eventDate ? new Date(booking.eventDate).toLocaleDateString() : 'N/A' %>
+                    <% } %>
+                  </td>
+                  <td>
+                    <span class="status-badge status-<%= currentStatus.replace(/\s+/g, '-') %>">
+                      <%= currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1) %>
+                    </span>
+                  </td>
+                  <td>
+                    <% if (booking.bookingType === 'wedding') { %>
+                      <strong>INR <%= advanceAmount.toLocaleString('en-IN') %></strong><br>
+                      <small>Online: <%= booking.Payment_Status || 'paid' %></small><br>
+                      <small>Payment ID: <%= booking.Payment_Id || '-' %></small>
+                    <% } else { %>
+                      <strong>INR <%= advanceAmount.toLocaleString('en-IN') %></strong><br>
+                      <small>Online: <%= booking.advancePaymentStatus || 'paid' %></small>
+                    <% } %>
+                  </td>
+                  <td>
+                    <% if (currentStatus === 'completed') { %>
+                      <% if (amountSaved) { %>
+                        <div class="saved-amount">
+                          <span class="saved-label">Saved</span>
+                          <div class="readonly-amount">
+                            <span>Advance paid</span>
+                            <strong>INR <%= advanceAmount.toLocaleString('en-IN') %></strong>
+                          </div>
+                          <div class="readonly-amount">
+                            <span>Event money</span>
+                            <strong>INR <%= remainingAmount.toLocaleString('en-IN') %></strong>
+                          </div>
+                          <small>Total earned: INR <%= totalAmount.toLocaleString('en-IN') %></small>
+                        </div>
+                      <% } else { %>
+                        <form class="amount-form" method="POST" action="/admin/bookings/update-amount/<%= booking.bookingType %>/<%= booking._id %>">
+                          <div class="readonly-amount">
+                            <span>Advance paid</span>
+                            <strong>INR <%= advanceAmount.toLocaleString('en-IN') %></strong>
+                          </div>
+                          <label>
+                            Remaining event money
+                            <input type="number" name="remainingAmount" min="0" value="<%= remainingAmount %>" placeholder="Remaining amount">
+                          </label>
+                          <small>Total earned: INR <%= totalAmount.toLocaleString('en-IN') %></small>
+                          <button type="submit" class="btn-sm btn-update">Save</button>
+                        </form>
+                      <% } %>
+                    <% } else { %>
+                      <span style="color:#64748b;">Mark completed to enter amount</span>
+                    <% } %>
+                  </td>
+                  <td><%= new Date(booking.createdAt).toLocaleDateString() %></td>
+                  <td>
+                    <div class="action-buttons">
+                      <% if (canChangeStatus) { %>
+                        <button class="btn-sm btn-update" onclick="openStatusModal('<%= booking.bookingType %>', '<%= booking._id %>', '<%= currentStatus %>')">Status</button>
+                      <% } else { %>
+                        <span class="action-note">Completed</span>
+                      <% } %>
+                      <% if (canCancelBooking) { %>
+                        <form method="POST" action="/admin/bookings/delete/<%= booking.bookingType %>/<%= booking._id %>" style="display:inline; margin:0;">
+                          <button type="submit" class="btn-sm btn-delete" onclick="return confirm('Cancel this booking record?')">Cancel</button>
+                        </form>
+                      <% } %>
+                    </div>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <p class="admin-empty">No bookings found.</p>
+      <% } %>
+    </section>
+  </main>
+
+  <div id="statusModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeStatusModal()">&times;</span>
+      <h2>Update Booking Status</h2>
+      <form method="POST" id="statusForm" class="admin-form">
+        <label>New Status
+          <select id="status" name="status" required>
+            <option value="pending">Pending</option>
+            <option value="accepted">Accepted</option>
+            <option value="rejected">Rejected</option>
+            <option value="process started">Process Started</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </label>
+        <button type="submit" class="admin-btn btn-update">Update Status</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const bookingSearch = document.getElementById('bookingSearch');
+    const bookingsTableBody = document.getElementById('bookingsTableBody');
+    const bookingRows = bookingsTableBody ? Array.from(bookingsTableBody.querySelectorAll('tr')) : [];
+
+    function sortBookingRows(query) {
+      if (!bookingsTableBody) return;
+
+      const searchTerm = query.trim().toLowerCase();
+      const sortedRows = [...bookingRows].sort((a, b) => {
+        if (!searchTerm) {
+          return Number(a.dataset.originalIndex) - Number(b.dataset.originalIndex);
+        }
+
+        const aName = a.dataset.customer || '';
+        const bName = b.dataset.customer || '';
+        const aMatch = aName.includes(searchTerm);
+        const bMatch = bName.includes(searchTerm);
+
+        if (aMatch !== bMatch) return aMatch ? -1 : 1;
+        return Number(a.dataset.originalIndex) - Number(b.dataset.originalIndex);
+      });
+
+      sortedRows.forEach((row) => {
+        row.classList.toggle('search-match', Boolean(searchTerm && (row.dataset.customer || '').includes(searchTerm)));
+        bookingsTableBody.appendChild(row);
+      });
+    }
+
+    if (bookingSearch) {
+      bookingSearch.addEventListener('input', (event) => {
+        sortBookingRows(event.target.value);
+      });
+    }
+
+    function openStatusModal(bookingType, bookingId, currentStatus) {
+      document.getElementById('status').value = currentStatus;
+      document.getElementById('statusForm').action = `/admin/bookings/update-status/${bookingType}/${bookingId}`;
+      document.getElementById('statusModal').style.display = 'block';
+    }
+
+    function closeStatusModal() {
+      document.getElementById('statusModal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('statusModal');
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>

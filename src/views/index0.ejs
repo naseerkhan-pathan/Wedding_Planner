@@ -8,6 +8,7 @@
     <title>Wedding-----Planner</title>
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/chatbot.css">
 </head>
 
 <body>
@@ -24,6 +25,9 @@
         <a href="#contact">Contact</a>
         <a href="/login">Login</a>
         <a href = "/signup">SignUp</a>
+        <% if (isAdmin) { %>
+          <a href="/admin">Admin Panel</a>
+        <% } %>
         </div>
         </nav>
         <div id="menu-bar"><i class="fas fa-bars"></i></div> 
@@ -52,48 +56,27 @@
             <h1><span>S</span>ervice</h1>
         </div>
         <div class="services-row">
-            <div class="services-col" style="background-image:url('/images/bg/back-2.png');">
-                <i class="fas fa-book-open"></i>
-                <h2>invitation</h2>
-              
-            </div>
-            <div class="services-col" style="background-image:url('/images/bg/back-2.png');">
-                <i class="fas fa-camera"></i>
-                <h2>Photography & Video</h2>
-              
-            </div>
-            <div class="services-col" style="background-image:url('/images/bg/back-2.png');">
-                <i class="fas fa-brush"></i>
-                <h2>Beauty & Makeup</h2>
-              
-            </div>
-            <div class="services-col" style="background-image:url('/images/bg/back-2.png');">
-                <i class="fab fa-pagelines"></i>
-                <h2>Wedding flowers</h2>
-                
-            </div>
-            <div class="services-col" style="background-image:url('/images/bg/back-2.png');">
-                <i class="fas fa-birthday-cake"></i>
-                <h2>wedding cake</h2>
-             
-            </div>
-            <div class="services-col" style="background-image:url('/images/bg/back-2.png');">
-                <i class="fas fa-music"></i>
-                <h2>music band</h2>
-      
-            </div>
-            <div class="services-col" style="background-image:url('/images/bg/back-2.png');">
-                <i class="fas fa-utensils"></i>
-                <h2>Catering</h2>
-               
-            </div>
-            <div class="services-col" style="background-image:url('/images/bg/back-2.png');">
-                <i class="fas fa-ring"></i>
-                <h2>Jewellery</h2>
-               
-            </div>
+            <% services.forEach(function(service) { %>
+                <div class="services-col service-card" data-service-title="<%= service.title %>">
+                    <% if(service.title.toLowerCase() === 'flowers'){ %>
+    <i class="fas fa-spa"></i>
+<% } else { %>
+    <i class="<%= service.iconClass %>"></i>
+<% } %>
+                    <h2 class="service-title"><%= service.title %></h2>
+                    <p><%= service.description %></p>
+                </div>
+            <% }) %>
         </div>
     </section>
+
+    <div id="serviceModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('serviceModal')">&times;</span>
+            <h2 id="serviceModalTitle">Service Gallery</h2>
+            <div id="serviceModalGallery" class="modal-gallery"></div>
+        </div>
+    </div>
 
     <!--vendor-->
     <section class="vendor" id="vendor">
@@ -246,6 +229,110 @@
         </div>
     </section>
 
+    <section class="reviews" id="reviews">
+        <div class="title">
+            <h1><span>C</span>ustomer <span>R</span>eviews</h1>
+        </div>
+        <div class="review-summary">
+            <div class="review-stars"><%= reviewRatingStars || '★★★★★' %></div>
+            <h2>Rated <%= averageRating || 5 %>/5 by our customers</h2>
+            <p class="review-count"><%= reviewCount || 0 %> reviews</p>
+            <button id="viewReviewsBtn" class="btn review-button">View Reviews</button>
+        </div>
+
+        <div id="reviewModal" class="review-modal">
+            <div class="review-modal-content">
+                <span id="reviewModalClose" class="close-btn">&times;</span>
+                <h2>Customer Reviews</h2>
+                <div class="review-list">
+                    <% if (reviews.length === 0) { %>
+                        <p>No reviews yet. Be the first to post one!</p>
+                    <% } else { %>
+                        <% reviews.forEach(function(review) { %>
+                            <div class="review-item">
+                                <div class="review-header">
+                                    <strong><%= review.name %></strong>
+                                    <span><%= '★'.repeat(review.rating || 5) %><%= '☆'.repeat(5 - (review.rating || 5)) %></span>
+                                </div>
+                                <p><%= review.text %></p>
+                            </div>
+                        <% }) %>
+                    <% } %>
+                </div>
+                <% if (userName) { %>
+                    <form action="/reviews" method="post" class="review-form">
+                        <input type="text" name="name" placeholder="Your Name" value="<%= userName || '' %>" required>
+                        <div class="rating-input">
+                            <input type="radio" id="star5" name="rating" value="5" checked>
+                            <label for="star5">★</label>
+                            <input type="radio" id="star4" name="rating" value="4">
+                            <label for="star4">★</label>
+                            <input type="radio" id="star3" name="rating" value="3">
+                            <label for="star3">★</label>
+                            <input type="radio" id="star2" name="rating" value="2">
+                            <label for="star2">★</label>
+                            <input type="radio" id="star1" name="rating" value="1">
+                            <label for="star1">★</label>
+                        </div>
+                        <textarea name="text" rows="4" placeholder="Write your review" required></textarea>
+                        <button class="btn" type="submit">Post Review</button>
+                    </form>
+                <% } else { %>
+                    <p class="review-login-message">Please <a href="/login">login</a> to post a review.</p>
+                <% } %>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="booking-modal">
+        <div class="booking-modal-content">
+            <span id="bookingModalClose" class="booking-close">&times;</span>
+            <h2>Book <span id="selectedService"></span></h2>
+            <form id="bookingForm" class="booking-form">
+                <input type="hidden" id="serviceId" name="serviceId">
+                <input type="hidden" id="serviceName" name="serviceName">
+                
+                <div class="form-group">
+                    <label for="eventDate">Wedding Date:</label>
+                    <input type="date" id="eventDate" name="eventDate">
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes">Additional Notes:</label>
+                    <textarea id="notes" name="notes" rows="4" placeholder="Any special requests or information..."></textarea>
+                </div>
+                
+                <% if (userName) { %>
+                    <button type="submit" class="booking-submit">Confirm Booking</button>
+                <% } else { %>
+                    <p style="color: #666; text-align: center; padding: 1rem;">Please <a href="/login" style="color: var(--clr2);">login</a> to book services</p>
+                <% } %>
+            </form>
+        </div>
+    </div>
+
+    <section class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" data-target="<%= stats?.totalBookings || 2000 %>"><%= stats?.totalBookings || 2000 %></div>
+                <p>Total Booking Customers</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" data-target="<%= stats?.customersVisited || 5000 %>"><%= stats?.customersVisited || 5000 %></div>
+                <p>Customers Visited Site</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" data-target="<%= stats?.successfulEvents || 1500 %>"><%= stats?.successfulEvents || 1500 %></div>
+                <p>Successfully Completed Events</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" data-target="<%= stats?.ongoingEvents || 300 %>"><%= stats?.ongoingEvents || 300 %></div>
+                <p>Ongoing Events</p>
+            </div>
+        </div>
+    </section>
+
     <!--footer section-->
     <footer id="contact">
         <div class="container">
@@ -280,7 +367,19 @@
         
         </div>
     </footer>
-        
+    <!-- Chatbot widget -->
+    <div class="chatbot">
+        <button id="chatToggle" class="chatbot-button" aria-label="Open chat"><i class="fas fa-comments"></i></button>
+        <div id="chatWindow" class="chat-window hidden" aria-hidden="true">
+            <div class="chat-header">
+                <span>Help Center</span>
+                <button id="chatClose" class="chat-close" aria-label="Close chat">&times;</button>
+            </div>
+            <div id="chatMessages" class="chat-messages" role="log" aria-live="polite"></div>
+            <div id="chatChoices" class="chat-choices"></div>
+        </div>
+    </div>
+
 </body>
 
 <script>
@@ -299,6 +398,206 @@
             document.querySelector('#menu-bar').classList.remove('active');
         }
     };
+
+    function openModal(id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.style.display = 'block';
+        }
+    }
+
+    function closeModal(id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    const serviceModalInfo = {
+        photography: {
+            title: 'Photography & Video',
+            images: [
+                "/images/photos/pic15.jpg",
+                "/images/photos/pic4.jpg",
+                "/images/photos/pic9.jpg",
+                "/images/photos/pic14.jpg",
+                "/images/photos/pic1.jpg",
+                "/images/photos/pic8.jpg",
+                "/images/photos/pic16.jpg",
+                "/images/photos/pic2.jpg",
+                "/images/photos/pic3.jpg",
+                "/images/photos/pic6.jpg",
+                "/images/photos/pic5.jpg",
+                "/images/photos/pic7.jpg",
+                "/images/photos/pic10.jpg",
+                "/images/photos/pic11.jpg",
+                "/images/photos/pic12.jpg",
+                "/images/photos/pic13.jpg"
+            ]
+        },
+        makeup: {
+            title: 'Beauty & Makeup',
+            images: [
+                "/images/beauty/pic4.jpg",
+                "/images/beauty/pic9.jpg",
+                "/images/beauty/pic1.jpg",
+                "/images/beauty/pic8.jpg",
+                "/images/beauty/pic2.jpg",
+                "/images/beauty/pic3.jpg",
+                "/images/beauty/pic6.jpg",
+                "/images/beauty/pic5.jpg",
+                "/images/beauty/pic7.jpg",
+                "/images/beauty/pic10.jpg",
+                "/images/beauty/pic11.jpg"
+            ]
+        },
+        flowers: {
+            title: 'Wedding Flowers',
+            images: [
+                "/images/flowers/pic4.jpg",
+                "/images/flowers/pic9.jpg",
+                "/images/flowers/pic1.jpg",
+                "/images/flowers/pic8.jpg",
+                "/images/flowers/pic2.jpg",
+                "/images/flowers/pic3.jpg",
+                "/images/flowers/pic6.jpg",
+                "/images/flowers/pic5.jpg",
+                "/images/flowers/pic7.jpg",
+                "/images/flowers/pic10.jpg",
+                "/images/flowers/pic11.jpg"
+            ]
+        },
+        cake: {
+            title: 'Wedding Cakes',
+            images: [
+                "/images/cakes/cake1.jpg",
+                "/images/cakes/cake2.jpg",
+                "/images/cakes/cake3.jpg",
+                "/images/cakes/cake4.jpg",
+                "/images/cakes/cake5.jpg",
+                "/images/cakes/cake6.jpg",
+                "/images/cakes/cake7.jpg",
+                "/images/cakes/cake8.jpg",
+                "/images/cakes/cake9.jpg",
+                "/images/cakes/cake10.jpg"
+            ]
+        },
+        music: {
+            title: 'Music Band & DJ',
+            images: [
+                "/images/music/pic15.jpg",
+                "/images/music/pic4.jpg",
+                "/images/music/pic9.jpg",
+                "/images/music/pic14.jpg",
+                "/images/music/pic1.jpg",
+                "/images/music/pic8.jpg",
+                "/images/music/pic16.jpg", 
+                "/images/music/pic2.jpg",
+                "/images/music/pic3.jpg",
+                "/images/music/pic6.jpg",
+                "/images/music/pic5.jpg",
+                "/images/music/pic7.jpg",
+                "/images/music/pic10.jpg",
+                "/images/music/pic11.jpg",
+                "/images/music/pic12.jpg",
+                "/images/music/pic13.jpg"
+            ]
+        },
+        catering: {
+            title: 'Catering & Menu',
+            images: [
+                "/images/catering/pic15.jpg",
+                "/images/catering/pic4.jpg",
+                "/images/catering/pic9.jpg",
+                "/images/catering/pic14.jpg",
+                "/images/catering/pic1.jpg",
+                "/images/catering/pic8.jpg",
+                "/images/catering/pic16.jpg",
+                "/images/catering/pic2.jpg",
+                "/images/catering/pic3.jpg",
+                "/images/catering/pic6.jpg",
+                "/images/catering/pic5.jpg",
+                "/images/catering/pic7.jpg",
+                "/images/catering/pic10.jpg",
+                "/images/catering/pic11.jpg",
+                "/images/catering/pic12.jpg",
+                "/images/catering/pic13.jpg"
+            ]
+        },
+        jewellery: {
+            title: 'Jewellery',
+            images: [
+                "/images/jewellery/pic4.jpg",
+                "/images/jewellery/pic9.jpg",
+                "/images/jewellery/pic14.jpg",
+                "/images/jewellery/pic1.jpg",
+                "/images/jewellery/pic8.jpg",
+                "/images/jewellery/pic2.jpg",
+                "/images/jewellery/pic3.jpg",
+                "/images/jewellery/pic6.jpg",
+                "/images/jewellery/pic5.jpg",
+                "/images/jewellery/pic7.jpg",
+                "/images/jewellery/pic10.jpg",
+                "/images/jewellery/pic11.jpg",
+                "/images/jewellery/pic12.jpg",
+                "/images/jewellery/pic13.jpg"
+            ]
+        },
+        invitation: {
+            title: 'Invitation Cards',
+            images: [
+                "/images/cards/card-13.jpeg",
+                "/images/cards/card-14.jpeg",
+                "/images/cards/card-15.jpeg",
+                "/images/cards/card-16.jpeg",
+                "/images/cards/card-17.jpeg",
+                "/images/cards/card-18.jpeg",
+                "/images/cards/card-19.jpeg",
+                "/images/cards/card-20.jpeg",
+                "/images/cards/card-21.jpeg",
+                "/images/cards/card-22.jpeg", 
+                "/images/cards/card-23.jpeg",
+                "/images/cards/card-24.jpeg",
+                "/images/cards/card-25.jpeg",
+                "/images/cards/card-26.jpeg",
+                "/images/cards/card-27.jpeg",
+                "/images/cards/card-28.jpeg",
+                "/images/cards/card-29.jpeg",
+                "/images/cards/card-32.jpeg",
+                "/images/cards/card-33.jpeg",
+                "/images/cards/card-34.jpeg",
+                "/images/cards/card-35.jpeg",
+                "/images/cards/card-36.jpeg",
+                "/images/cards/card-37.jpeg",
+                "/images/cards/card-38.jpeg",
+                "/images/cards/card-39.jpeg",
+                "/images/cards/card-40.jpeg" 
+            ]
+        }/*  */
+    };
+
+    document.querySelectorAll('.service-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const title = String(card.dataset.serviceTitle || '').trim().toLowerCase();
+            const info = serviceModalInfo[title];
+            if (!info) return;
+            const gallery = document.getElementById('serviceModalGallery');
+            const titleEl = document.getElementById('serviceModalTitle');
+            if (gallery && titleEl) {
+                titleEl.textContent = info.title;
+                gallery.innerHTML = info.images.map(src => `<img src="${src}" alt="${info.title}">`).join('');
+            }
+            openModal('serviceModal');
+        });
+    });
+
+    window.addEventListener('click', function (event) {
+        const modal = event.target.closest('.modal');
+        if (modal && event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+
     function setupModal(showButtonId, modalId, closeButtonId) {
     const showButton = document.getElementById(showButtonId);
     const modal = document.getElementById(modalId);
@@ -327,4 +626,5 @@ setupModal("showMoreBtn", "venueModal", "closeModalBtn");
 setupModal("showMoreBtn1", "venueModal1", "closeModalBtn1");
 
 </script>
+<script src="/chatbot.js"></script>
 </html>

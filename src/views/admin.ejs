@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="/admin.css" />
+</head>
+<body class="admin-body">
+  <main class="admin-shell">
+    <header class="admin-header">
+      <div>
+        <h1>Admin Dashboard</h1>
+        <p>Track bookings, completed events, customers, and earnings.</p>
+      </div>
+      <a href="/logout" class="admin-logout">Logout</a>
+    </header>
+
+    <nav class="admin-nav">
+      <a href="/admin" class="active">Dashboard</a>
+      <a href="/admin/services">Services</a>
+      <a href="/admin/reviews">Reviews</a>
+      <a href="/admin/bookings">Bookings</a>
+      <a href="/admin/stats">Stats</a>
+    </nav>
+
+    <section class="admin-grid">
+      <div class="admin-stat-card tone-blue">
+        <h3>Customers Visited</h3>
+        <strong><%= stats.customersVisited || 0 %></strong>
+      </div>
+      <div class="admin-stat-card tone-pink">
+        <h3>Total Bookings</h3>
+        <strong><%= stats.totalBookings || 0 %></strong>
+      </div>
+      <div class="admin-stat-card tone-green">
+        <h3>Completed Events</h3>
+        <strong><%= stats.successfulEvents || 0 %></strong>
+      </div>
+      <div class="admin-stat-card tone-orange">
+        <h3>Ongoing Events</h3>
+        <strong><%= stats.ongoingEvents || 0 %></strong>
+      </div>
+      <div class="admin-stat-card tone-violet">
+        <h3>Total Earnings</h3>
+        <strong>INR <%= (chartData.revenue.total || 0).toLocaleString('en-IN') %></strong>
+      </div>
+    </section>
+
+    <section class="chart-grid">
+      <div class="admin-card chart-card">
+        <h2>Website Progress</h2>
+        <div class="filter-tabs">
+          <% Object.keys(chartData.filters).forEach(function(key) { %>
+            <a href="/admin?progressRange=<%= key %>&revenueRange=<%= chartData.revenue.filter %>" class="<%= chartData.progress.filter === key ? 'active' : '' %>"><%= chartData.filters[key].label %></a>
+          <% }) %>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="progressChart"></canvas>
+          <div id="progressTooltip" class="chart-tooltip"></div>
+        </div>
+      </div>
+
+      <div class="admin-card chart-card">
+        <h2>Amount Earned</h2>
+        <p class="chart-note">
+          Advance: <strong><%= chartData.revenue.count || 0 %></strong> new bookings x INR 5,000.
+          Event money comes from <strong><%= chartData.revenue.savedCount || 0 %></strong> saved completed bookings.
+        </p>
+        <div class="chart-wrap">
+          <canvas id="revenueChart"></canvas>
+          <div id="revenueTooltip" class="chart-tooltip"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const chartData = <%- JSON.stringify(chartData) %>;
+
+    function formatNumber(value) {
+      return Number(value || 0).toLocaleString('en-IN');
+    }
+
+    function fitCanvas(canvas) {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      return rect;
+    }
+
+    function drawBarChart(canvasId, tooltipId, items, options) {
+      const canvas = document.getElementById(canvasId);
+      const tooltip = document.getElementById(tooltipId);
+      const ctx = canvas.getContext('2d');
+      const bars = [];
+      const rect = fitCanvas(canvas);
+      const width = rect.width;
+      const height = rect.height;
+      const padding = { top: 34, right: 22, bottom: 58, left: 50 };
+      const chartWidth = width - padding.left - padding.right;
+      const chartHeight = height - padding.top - padding.bottom;
+      const maxValue = Math.max(...items.map((item) => Number(item.value) || 0), 1);
+      const barGap = 22;
+      const barWidth = Math.max((chartWidth - (items.length - 1) * barGap) / items.length, 32);
+
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, width, height);
+      ctx.strokeStyle = '#e5e7eb';
+      ctx.lineWidth = 1;
+
+      for (let i = 0; i <= 4; i++) {
+        const y = padding.top + (chartHeight / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(padding.left, y);
+        ctx.lineTo(width - padding.right, y);
+        ctx.stroke();
+      }
+
+      items.forEach((item, index) => {
+        const value = Number(item.value) || 0;
+        const barHeight = (value / maxValue) * chartHeight;
+        const x = padding.left + index * (barWidth + barGap);
+        const y = padding.top + chartHeight - barHeight;
+        const gradient = ctx.createLinearGradient(0, y, 0, y + barHeight);
+        gradient.addColorStop(0, options.colors[index % options.colors.length][0]);
+        gradient.addColorStop(1, options.colors[index % options.colors.length][1]);
+
+        ctx.fillStyle = gradient;
+        ctx.fillRect(x, y, barWidth, barHeight);
+        ctx.fillStyle = '#111827';
+        ctx.font = '700 13px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(options.prefix + formatNumber(value), x + barWidth / 2, y - 10);
+        ctx.fillStyle = '#475569';
+        ctx.font = '700 12px Arial';
+        ctx.fillText(item.label, x + barWidth / 2, height - 24);
+        bars.push({ x, y, w: barWidth, h: barHeight, label: item.label, value });
+      });
+
+      canvas.onmousemove = function(event) {
+        const bounds = canvas.getBoundingClientRect();
+        const mouseX = event.clientX - bounds.left;
+        const mouseY = event.clientY - bounds.top;
+        const hit = bars.find((bar) => mouseX >= bar.x && mouseX <= bar.x + bar.w && mouseY >= bar.y && mouseY <= bar.y + bar.h);
+        if (!hit) {
+          tooltip.style.display = 'none';
+          return;
+        }
+        tooltip.textContent = `${hit.label}: ${options.prefix}${formatNumber(hit.value)}`;
+        tooltip.style.display = 'block';
+        tooltip.style.left = `${mouseX + 12}px`;
+        tooltip.style.top = `${mouseY + 12}px`;
+      };
+      canvas.onmouseleave = function() {
+        tooltip.style.display = 'none';
+      };
+    }
+
+    function renderCharts() {
+      drawBarChart('progressChart', 'progressTooltip', chartData.metrics, {
+        prefix: '',
+        colors: [['#2563eb', '#06b6d4'], ['#ec4899', '#f97316'], ['#059669', '#84cc16']],
+      });
+      drawBarChart('revenueChart', 'revenueTooltip', [
+ {
+  label:'Advance Money',
+  value: chartData.revenue.advanceTotal
+ },
+ {
+  label:'Event Money',
+  value: chartData.revenue.eventTotal
+ },
+ {
+  label:'Total Earnings',
+  value: chartData.revenue.total
+ }
+], {
+        prefix: 'INR ',
+        colors: [['#7c3aed', '#2563eb'], ['#059669', '#84cc16']],
+      });
+    }
+
+    window.addEventListener('resize', renderCharts);
+    renderCharts();
+  </script>
+</body>
+</html>

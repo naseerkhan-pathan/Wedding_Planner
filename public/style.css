@@ -128,6 +128,8 @@ section .login{
   border-radius: 12px;
   max-width: 900px;
   margin: auto;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
 }
 
 .close-btn {
@@ -160,12 +162,23 @@ section .login{
 
 .modal-gallery img {
   width: 100%;
-  max-width: 200px; 
-  height: 200px; 
-  object-fit: cover; 
+  max-width: 100%;
+  height: 220px;
+  object-fit: cover;
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
 
+@media(max-width: 768px) {
+  .modal-gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .venue_222 {
+    grid-template-columns: 1fr;
+  }
+  .venue_222 img {
+    height: auto;
+  }
 }
 .cake-item {
   position: relative;
@@ -352,7 +365,7 @@ span {
 .services-col {
     height: 22rem;
     color: rgb(236, 68, 90);
-    background: url("/project/images/bg/back-2.png");
+    background: url("/images/bg/back-2.png");
     background-color: lightgray;
     background-position: center;
     background-size: cover;
@@ -367,6 +380,8 @@ span {
     box-shadow: 0 .5rem 1rem rgba(0, 0, 0, 0.2);
     cursor: pointer;
 }
+
+
 .services-col i {
     padding: 2.2rem;
     border: none;
@@ -905,6 +920,365 @@ footer {
     color: #aaa;
 }
 
+.review-section,
+.reviews {
+    padding: 5rem 9%;
+    background: #fdf7f3;
+}
+.review-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(18rem, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+.review-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 1rem;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    margin-top: 2rem;
+}
+.review-summary h2 {
+    font-size: 2.2rem;
+    color: #222;
+    margin: 0;
+}
+.review-button {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 0.8rem;
+    background: var(--clr2);
+    color: #fff;
+    font-size: 1.6rem;
+    cursor: pointer;
+}
+.review-button:hover {
+    opacity: 0.95;
+}
+.review-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 2000;
+    padding: 4rem 2rem;
+    overflow-y: auto;
+}
+.review-modal-content {
+    max-width: 1000px;
+    margin: auto;
+    background: #fff;
+    border-radius: 1.2rem;
+    padding: 2.5rem;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.15);
+}
+.review-modal-content h2 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+}
+.review-list {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+.review-item {
+    background: #f7f7f7;
+    border-radius: 1rem;
+    padding: 1.8rem;
+}
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.review-header strong {
+    font-size: 1.7rem;
+    color: #222;
+}
+.review-header span {
+    color: #ffb400;
+}
+.review-item p {
+    font-size: 1.5rem;
+    color: #444;
+    line-height: 2rem;
+}
+.review-form {
+    display: grid;
+    gap: 1rem;
+}
+.review-form input,
+.review-form textarea {
+    width: 100%;
+    padding: 1rem 1.2rem;
+    border: 1px solid #ddd;
+    border-radius: 0.8rem;
+    font-size: 1.4rem;
+    color: #333;
+}
+.review-form textarea {
+    resize: vertical;
+}
+.rating-input {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    flex-direction: row-reverse;
+    direction: rtl;
+}
+.rating-input input[type="radio"] {
+    display: none;
+}
+.rating-input label {
+    font-size: 2.4rem;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+.rating-input input[type="radio"]:checked ~ label,
+.rating-input label:hover,
+.rating-input label:hover ~ label {
+    color: #ffb400;
+}
+.review-count {
+    margin: 0;
+    color: #666;
+    font-size: 1.5rem;
+}
+.review-login-message {
+    font-size: 1.4rem;
+    color: #333;
+    text-align: center;
+    padding: 1.2rem 0;
+}
+.review-login-message a {
+    color: var(--clr2);
+    text-decoration: underline;
+}
+.close-btn {
+    font-size: 3rem;
+    color: #333;
+    cursor: pointer;
+    float: right;
+}
+.review-grid {
+    display: none;
+}
+.review-card {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.review-stars {
+    color: #ffb400;
+    font-size: 1.8rem;
+}
+.review-card h3 {
+    font-size: 2rem;
+    color: #222;
+}
+.review-card p {
+    font-size: 1.5rem;
+    color: #555;
+    line-height: 2rem;
+}
+.review-card span {
+    color: #777;
+    font-weight: 600;
+    margin-top: auto;
+}
+
+/* Booking Modal Styles */
+#bookingModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 2000;
+    padding: 4rem 2rem;
+    overflow-y: auto;
+}
+
+#bookingModal.show {
+    display: block;
+}
+
+.booking-modal-content {
+    max-width: 600px;
+    margin: auto;
+    background: #fff;
+    border-radius: 1.2rem;
+    padding: 2.5rem;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.15);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.booking-modal-content h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.booking-close {
+    font-size: 2.5rem;
+    color: #999;
+    cursor: pointer;
+    float: right;
+    line-height: 1;
+}
+
+.booking-close:hover {
+    color: #333;
+}
+
+.booking-form {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 0.6rem;
+    font-size: 1.4rem;
+    font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--clr2);
+    box-shadow: 0 0 5px rgba(236, 68, 90, 0.3);
+}
+
+.booking-submit {
+    background: var(--clr2);
+    color: white;
+    padding: 1.2rem;
+    border: none;
+    border-radius: 0.6rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.booking-submit:hover {
+    background: #d4364a;
+}
+
+.service-card .book-btn {
+    background: var(--clr2);
+    color: white;
+    padding: 0.8rem 1.6rem;
+    border: none;
+    border-radius: 0.6rem;
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.service-card .book-btn:hover {
+    background: #d4364a;
+}
+
+.stats-section {
+    padding: 4rem 9%;
+    background: linear-gradient(135deg, rgba(255,90,95,0.08), rgba(255,160,160,0.08));
+}
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(15rem, 1fr));
+    gap: 1.5rem;
+}
+.stat-card {
+    background: rgba(255,255,255,0.95);
+    border-radius: 1rem;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    padding: 1.8rem;
+    text-align: center;
+}
+.stat-value {
+    font-size: 3.4rem;
+    font-weight: 800;
+    color: var(--clr2);
+}
+.stat-card p {
+    font-size: 1.3rem;
+    color: #444;
+    margin-top: 1rem;
+}
+
+@media(max-width: 1200px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(14rem, 1fr));
+    }
+}
+
+@media(max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media(max-width: 991px) {
+    .review-grid {
+        grid-template-columns: 1fr;
+    }
+    .review-summary {
+        flex-direction: column;
+        text-align: center;
+    }
+    .review-summary h2 {
+        margin: 0;
+    }
+}
 
 /*----------------------media Query-------------------*/
 
@@ -954,7 +1328,8 @@ footer {
     .venue-list,
     .invitation-row,
     .container {
-        display: inline-block;
+        display: block;
+        width: 100%;
     }
     .in-box {
         margin-bottom: 2rem;
@@ -964,7 +1339,7 @@ footer {
     }
     section h4 {
         font-size: 3rem;
-        margin-left: 10rem;
+        margin-left: 0;
         text-align: center;
     }
 }

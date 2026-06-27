@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Services</title>
+  <link rel="stylesheet" href="/admin.css" />
+</head>
+<body class="admin-body">
+  <main class="admin-shell">
+    <header class="admin-header">
+      <div>
+        <h1>Manage Services</h1>
+        <p>Add and update the services shown on the website.</p>
+      </div>
+      <a href="/logout" class="admin-logout">Logout</a>
+    </header>
+
+    <nav class="admin-nav">
+      <a href="/admin">Dashboard</a>
+      <a href="/admin/services" class="active">Services</a>
+      <a href="/admin/reviews">Reviews</a>
+      <a href="/admin/bookings">Bookings</a>
+      <a href="/admin/stats">Stats</a>
+    </nav>
+
+    <section class="admin-card">
+      <h2>Add Service</h2>
+      <form action="/admin/services/add" method="post" class="admin-form">
+        <label>Service Title
+          <input type="text" name="title" placeholder="Photography" required />
+        </label>
+        <label>Description
+          <input type="text" name="description" placeholder="Short service description" required />
+        </label>
+        <label>Icon Class
+          <input type="text" name="iconClass" placeholder="fas fa-camera" />
+        </label>
+        <label>Price
+          <input type="text" name="price" placeholder="INR 5000" />
+        </label>
+        <button class="admin-btn" type="submit">Add Service</button>
+      </form>
+    </section>
+
+    <section class="admin-card">
+      <h2>Current Services</h2>
+      <% if (!services || services.length === 0) { %>
+        <p class="admin-empty">No services available.</p>
+      <% } else { %>
+        <div class="admin-list">
+          <% services.forEach(function(service) { %>
+            <article class="admin-list-item">
+              <div class="admin-list-header">
+                <strong><%= service.title %></strong>
+                <% if (service.price) { %><span><%= service.price %></span><% } %>
+              </div>
+              <p><%= service.description %></p>
+              <form action="/admin/services/edit/<%= service._id %>" method="post" class="admin-form">
+                <label>Service Title
+                  <input type="text" name="title" value="<%= service.title %>" required />
+                </label>
+                <label>Description
+                  <input type="text" name="description" value="<%= service.description %>" required />
+                </label>
+                <label>Icon Class
+                  <input type="text" name="iconClass" value="<%= service.iconClass %>" />
+                </label>
+                <label>Price
+                  <input type="text" name="price" value="<%= service.price || '' %>" />
+                </label>
+                <button class="admin-btn btn-update" type="submit">Save Service</button>
+              </form>
+              <form action="/admin/services/delete/<%= service._id %>" method="post" style="margin-top: 12px;">
+                <button class="admin-btn btn-delete" type="submit" onclick="return confirm('Delete this service?')">Delete Service</button>
+              </form>
+            </article>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+  </main>
+</body>
+</html>

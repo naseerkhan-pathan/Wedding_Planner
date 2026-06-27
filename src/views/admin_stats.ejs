@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Manage Stats</title>
+  <link rel="stylesheet" href="/admin.css">
+</head>
+<body class="admin-body">
+  <main class="admin-shell">
+    <header class="admin-header">
+      <div>
+        <h1>Manage Site Statistics</h1>
+        <p>Control the public counters displayed on the website.</p>
+      </div>
+      <a href="/logout" class="admin-logout">Logout</a>
+    </header>
+
+    <nav class="admin-nav">
+      <a href="/admin">Dashboard</a>
+      <a href="/admin/services">Services</a>
+      <a href="/admin/reviews">Reviews</a>
+      <a href="/admin/bookings">Bookings</a>
+      <a href="/admin/stats" class="active">Stats</a>
+    </nav>
+
+    <section class="admin-grid">
+      <div class="admin-stat-card tone-blue">
+        <h3>Total Bookings</h3>
+        <strong><%= stats.totalBookings %>+</strong>
+      </div>
+      <div class="admin-stat-card tone-pink">
+        <h3>Customers Visited</h3>
+        <strong><%= stats.customersVisited %>+</strong>
+      </div>
+      <div class="admin-stat-card tone-green">
+        <h3>Successful Events</h3>
+        <strong><%= stats.successfulEvents %>+</strong>
+      </div>
+      <div class="admin-stat-card tone-violet">
+        <h3>Ongoing Events</h3>
+        <strong><%= stats.ongoingEvents %>+</strong>
+      </div>
+    </section>
+
+    <section class="admin-card">
+      <h2>Update Statistics</h2>
+      <form method="POST" action="/admin/stats/update" class="admin-form">
+        <label>Total Bookings
+          <input type="number" id="totalBookings" name="totalBookings" value="<%= stats.totalBookings %>" required>
+        </label>
+        <label>Customers Visited Site
+          <input type="number" id="customersVisited" name="customersVisited" value="<%= stats.customersVisited %>" required>
+        </label>
+        <label>Successful Completed Events
+          <input type="number" id="successfulEvents" name="successfulEvents" value="<%= stats.successfulEvents %>" required>
+        </label>
+        <label>Ongoing Events
+          <input type="number" id="ongoingEvents" name="ongoingEvents" value="<%= stats.ongoingEvents %>" required>
+        </label>
+        <button type="submit" class="admin-btn btn-update">Update Statistics</button>
+      </form>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Reviews</title>
+  <link rel="stylesheet" href="/admin.css" />
+</head>
+<body class="admin-body">
+  <main class="admin-shell">
+    <header class="admin-header">
+      <div>
+        <h1>Manage Reviews</h1>
+        <p>Edit customer reviews and ratings shown on the website.</p>
+      </div>
+      <a href="/logout" class="admin-logout">Logout</a>
+    </header>
+
+    <nav class="admin-nav">
+      <a href="/admin">Dashboard</a>
+      <a href="/admin/services">Services</a>
+      <a href="/admin/reviews" class="active">Reviews</a>
+      <a href="/admin/bookings">Bookings</a>
+      <a href="/admin/stats">Stats</a>
+    </nav>
+
+    <section class="admin-card">
+      <% if (!reviews || reviews.length === 0) { %>
+        <p class="admin-empty">No reviews available.</p>
+      <% } else { %>
+        <div class="admin-list">
+          <% reviews.forEach(function(review) { %>
+            <article class="admin-list-item">
+              <div class="admin-list-header">
+                <strong><%= review.name %></strong>
+                <span><% for (let i = 0; i < (Number(review.rating) || 5); i++) { %>&#9733;<% } %></span>
+              </div>
+              <p><%= review.text %></p>
+              <form action="/admin/reviews/edit/<%= review._id %>" method="post" class="admin-form">
+                <label>Name
+                  <input type="text" name="name" value="<%= review.name %>" required />
+                </label>
+                <label>Review
+                  <textarea name="text" rows="3" required><%= review.text %></textarea>
+                </label>
+                <label>Rating
+                  <input type="number" name="rating" value="<%= review.rating %>" min="1" max="5" />
+                </label>
+                <button class="admin-btn btn-update" type="submit">Save Review</button>
+              </form>
+              <form action="/admin/reviews/delete/<%= review._id %>" method="post" style="margin-top: 12px;">
+                <button class="admin-btn btn-delete" type="submit" onclick="return confirm('Delete this review?')">Delete Review</button>
+              </form>
+            </article>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+  </main>
+</body>
+</html>

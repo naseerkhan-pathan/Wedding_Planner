@@ -273,6 +273,42 @@ b {
   background: #b91c1c;
 }
 
+.dashboard-review-link {
+  display: inline-block;
+  padding: 8px 14px;
+  background: #ec445a;
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 13px;
+  text-align: center;
+}
+
+.status-text {
+  font-weight: 700;
+}
+
+.status-pending {
+  color: #2f2f9e;
+}
+
+.status-accepted {
+  color: #12683b;
+}
+
+.status-rejected,
+.status-cancelled {
+  color: #721c24;
+}
+
+.status-process-started {
+  color: #8a5a00;
+}
+
+.status-completed {
+  color: #155724;
+}
+
 @media (max-width: 768px) {
   .dashboard-card {
     padding: 12px;

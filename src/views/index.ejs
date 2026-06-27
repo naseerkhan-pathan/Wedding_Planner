@@ -7,6 +7,7 @@
     <title>Wedding-----Planner</title>
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/chatbot.css">
 </head>
 <body>
 <header class="head"> 
@@ -20,6 +21,9 @@
         <a href="#contact">Contact</a>
         <a href="/dashboard">Dashboard</a>
         <a href="/logout">Logout</a>
+        <% if (isAdmin) { %>
+          <a href="/admin">Admin Panel</a>
+        <% } %>
         <a href="/register" class="nav-btn">Book Now</a>
     </div>
     </nav>
@@ -46,39 +50,13 @@
         <h1><span>S</span>ervice</h1>
     </div>
     <div class="services-row">
-        <div class="services-col" onclick="openModal('venueModal1')" style="background-image:url('/images/bg/back-2.png');">
-            <i class="fas fa-book-open"></i>
-            <h2>invitation</h2>
-        </div>
-        <div class="services-col" onclick="openModal('photoModal')" style="background-image:url('/images/bg/back-2.png');">
-            <i class="fas fa-camera"></i>
-            <h2>Photography & Video</h2>
-            
-        </div>
-        <div class="services-col" onclick="openModal('makeupModal')" style="background-image:url('/images/bg/back-2.png');">
-            <i class="fas fa-brush"></i>
-            <h2>Beauty & Makeup</h2>
-        </div>
-        <div class="services-col" onclick="openModal('flowerModal')" style="background-image:url('/images/bg/back-2.png');">
-            <i class="fab fa-pagelines"></i>
-            <h2>Wedding flowers</h2>
-        </div>
-        <div class="services-col" onclick="openModal('cakeModal')" style="background-image:url('/images/bg/back-2.png');">
-            <i class="fas fa-birthday-cake"></i>
-            <h2>wedding cake</h2>
-        </div>
-        <div class="services-col" onclick="openModal('musicModal')" style="background-image:url('/images/bg/back-2.png');">
-            <i class="fas fa-music"></i>
-            <h2>music band & DJ</h2>
-        </div>
-        <div class="services-col" onclick="openModal('cateringModal')" style="background-image:url('/images/bg/back-2.png');">
-            <i class="fas fa-utensils"></i>
-            <h2>Cooking & Catering</h2>
-        </div>
-        <div class="services-col" onclick="openModal('jewelModal')" style="background-image:url('/images/bg/back-2.png');">
-            <i class="fas fa-ring"></i>
-            <h2>Jewellery</h2>
-        </div>
+        <% services.forEach(function(service) { %>
+            <div class="services-col service-card" data-service-title="<%= service.title %>">
+                <i class="<%= service.iconClass %>"></i>
+                <h2 class="service-title"><%= service.title %></h2>
+                <p><%= service.description %></p>
+            </div>
+        <% }) %>
     </div>
 </section>
 
@@ -555,7 +533,7 @@
 
         <!-- "More" Button -->
         <div class="more-btn-container1">
-            <button class="btn1" id="showMoreBtn1">Show More Venues</button>
+            <button class="btn1" id="showMoreBtn1">Show More Invitations</button>
         </div>
     </section>
     <!-- Modal for Venues-->
@@ -725,6 +703,102 @@
         </div>
     </div>
 
+    <section class="reviews" id="reviews">
+        <div class="title">
+            <h1><span>C</span>ustomer <span>R</span>eviews</h1>
+        </div>
+        <div class="review-summary">
+            <div class="review-stars"><%= reviewRatingStars || '★★★★★' %></div>
+            <h2>Rated <%= averageRating || 5 %>/5 by our customers</h2>
+            <p class="review-count"><%= reviewCount || 0 %> reviews</p>
+            <button id="viewReviewsBtn" class="btn review-button">View Reviews</button>
+        </div>
+
+        <div id="reviewModal" class="review-modal">
+            <div class="review-modal-content">
+                <span id="reviewModalClose" class="close-btn">&times;</span>
+                <h2>Customer Reviews</h2>
+                <div class="review-list">
+                    <% if (reviews.length === 0) { %>
+                        <p>No reviews yet. Be the first to post one!</p>
+                    <% } else { %>
+                            <% reviews.forEach(function(review) { %>
+                                <div class="review-item">
+                                    <div class="review-header">
+                                        <strong><%= review.name %></strong>
+                                        <span><%= '★'.repeat(review.rating || 5) %><%= '☆'.repeat(5 - (review.rating || 5)) %></span>
+                                    </div>
+                                    <p><%= review.text %></p>
+                                </div>
+                            <% }) %>
+                    <% } %>
+                </div>
+                <form action="/reviews" method="post" class="review-form">
+                    <input type="text" name="name" placeholder="Your Name" value="<%= userName || '' %>" required>
+                        <div class="rating-input">
+                            <input type="radio" id="star5" name="rating" value="5" checked>
+                            <label for="star5">★</label>
+                            <input type="radio" id="star4" name="rating" value="4">
+                            <label for="star4">★</label>
+                            <input type="radio" id="star3" name="rating" value="3">
+                            <label for="star3">★</label>
+                            <input type="radio" id="star2" name="rating" value="2">
+                            <label for="star2">★</label>
+                            <input type="radio" id="star1" name="rating" value="1">
+                            <label for="star1">★</label>
+                        </div>
+                    <textarea name="text" rows="4" placeholder="Write your review" required></textarea>
+                    <button class="btn" type="submit">Post Review</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="booking-modal">
+        <div class="booking-modal-content">
+            <span id="bookingModalClose" class="booking-close">&times;</span>
+            <h2>Book <span id="selectedService"></span></h2>
+            <form id="bookingForm" class="booking-form">
+                <input type="hidden" id="serviceId" name="serviceId">
+                <input type="hidden" id="serviceName" name="serviceName">
+                
+                <div class="form-group">
+                    <label for="eventDate">Wedding Date:</label>
+                    <input type="date" id="eventDate" name="eventDate">
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes">Additional Notes:</label>
+                    <textarea id="notes" name="notes" rows="4" placeholder="Any special requests or information..."></textarea>
+                </div>
+                
+                <button type="submit" class="booking-submit">Confirm Booking</button>
+            </form>
+        </div>
+    </div>
+
+    <section class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" data-target="<%= stats?.totalBookings || 2000 %>"><%= stats?.totalBookings || 2000 %></div>
+                <p>Total Booking Customers</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" data-target="<%= stats?.customersVisited || 5000 %>"><%= stats?.customersVisited || 5000 %></div>
+                <p>Customers Visited Site</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" data-target="<%= stats?.successfulEvents || 1500 %>"><%= stats?.successfulEvents || 1500 %></div>
+                <p>Successfully Completed Events</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" data-target="<%= stats?.ongoingEvents || 300 %>"><%= stats?.ongoingEvents || 300 %></div>
+                <p>Ongoing Events</p>
+            </div>
+        </div>
+    </section>
+
     <!--footer section-->
     <footer id="contact">
         <div class="container">
@@ -760,6 +834,19 @@
         </div>
     </footer>
         
+    <!-- Chatbot widget -->
+    <div class="chatbot">
+        <button id="chatToggle" class="chatbot-button" aria-label="Open chat"><i class="fas fa-comments"></i></button>
+        <div id="chatWindow" class="chat-window hidden" aria-hidden="true">
+            <div class="chat-header">
+                <span>Help Center</span>
+                <button id="chatClose" class="chat-close" aria-label="Close chat">&times;</button>
+            </div>
+            <div id="chatMessages" class="chat-messages" role="log" aria-live="polite"></div>
+            <div id="chatChoices" class="chat-choices"></div>
+        </div>
+    </div>
+
 </body>
 <script>
 function openModal(id) {
@@ -776,6 +863,29 @@ window.onclick = function(event) {
         }
     });
 };
+
+(function initializeServiceModals() {
+    const modalMap = {
+        photography: 'photoModal',
+        makeup: 'makeupModal',
+        flowers: 'flowerModal',
+        cake: 'cakeModal',
+        music: 'musicModal',
+        catering: 'cateringModal',
+        jewellery: 'jewelModal',
+        invitation: 'venueModal1'
+    };
+
+    document.querySelectorAll('.service-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const title = card.dataset.serviceTitle?.toLowerCase().trim();
+            const modalId = modalMap[title];
+            if (modalId) {
+                openModal(modalId);
+            }
+        });
+    });
+})();
 </script>
 
 <script>
@@ -821,5 +931,6 @@ setupModal("showMoreBtn", "venueModal", "closeModalBtn");
 setupModal("showMoreBtn1", "venueModal1", "closeModalBtn1");
 
 </script>
+<script src="/chatbot.js"></script>
 </html>
 

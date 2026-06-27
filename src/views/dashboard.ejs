@@ -31,32 +31,42 @@
           <table class="dashboard-table">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Mobile</th>
-                <th>Address</th>
+                <th>Booked At</th>
+                <th>Location</th>
                 <th>Date From</th>
                 <th>Date To</th>
                 <th>Services</th>
                 <th>Guests</th>
-                <th>Booked At</th>
+                <th>Advance</th>
+                <th>Payment</th>
+                <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
               <% bookings.forEach((booking) => { %>
                 <tr>
-                  <td data-label="Name"><%= booking.Name %></td>
-                  <td data-label="Mobile"><%= booking.Mobile_no %></td>
+                  <td data-label="Booked At"><%= new Date(booking.createdAt).toLocaleString('en-GB') %></td>
                   <td data-label="Address"><%= booking.Wedding_Address %></td>
                   <td data-label="Date From"><%= new Date(booking.Wedding_date_From).toLocaleDateString('en-GB') %></td>
                   <td data-label="Date To"><%= new Date(booking.Wedding_date_To).toLocaleDateString('en-GB') %></td>
                   <td data-label="Services"><%= (booking.Service || []).join(', ') %></td>
                   <td data-label="Guests"><%= booking.No_of_Guests %></td>
-                  <td data-label="Booked At"><%= new Date(booking.createdAt).toLocaleString('en-GB') %></td>
+                  <td data-label="Advance">INR <%= booking.Advance_Amount || 5000 %></td>
+                  <td data-label="Payment"><%= booking.Payment_Status || 'Advance Paid' %></td>
+                  <td data-label="Status">
+                    <strong class="status-text status-<%= (booking.status || 'pending').replace(/\s+/g, '-') %>"><%= (booking.status || 'pending').charAt(0).toUpperCase() + (booking.status || 'pending').slice(1) %></strong>
+                  </td>
                   <td data-label="Action">
-                    <form class="dashboard-cancel-form" action="/dashboard/cancel/<%= booking._id %>" method="POST" onsubmit="return confirm('Cancel this booking?');">
-                      <button type="submit" class="dashboard-cancel-btn">Cancel</button>
-                    </form>
+                    <% if (booking.status === 'pending' || booking.status === 'accepted') { %>
+                      <form class="dashboard-cancel-form" action="/dashboard/cancel/<%= booking._id %>" method="POST" onsubmit="return confirm('Cancel this booking?');">
+                        <button type="submit" class="dashboard-cancel-btn">Cancel</button>
+                      </form>
+                    <% } else if (booking.status === 'completed') { %>
+                      <a href="/index#reviews" class="dashboard-review-link">Write Review</a>
+                    <% } else { %>
+                      <span style="color:#999;">-</span>
+                    <% } %>
                   </td>
                 </tr>
               <% }) %>
